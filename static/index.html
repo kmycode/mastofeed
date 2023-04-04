@@ -19,6 +19,13 @@
 		<br>
 		<hr><br>
 		<form action="javascript:genUrl()">
+			<label>サーバーの種類:
+				<select id="serverapp">
+					<option value="mastodon">Mastodon</option>
+					<option value="calckey">Calckey (※Misskeyは不可)</option>
+				</select>
+			</label>
+			<br>
 			<label>サーバーのドメイン:<input required type="text" id="urlin" placeholder="mastodon.social"
 					oninvalid="this.setCustomValidity('サーバーのドメインを入力してください。例：kmy.blue / fedibird.com / otadon.com')"
 					oninput="this.setCustomValidity('')"></label>
@@ -73,7 +80,10 @@
 				return document.getElementById(id).value;
 			}
 
-			var inUrl = 'https://' + val('urlin') + '/users/' + val('usernamein');
+			var serverapp = val('serverapp');
+
+			var inUrl = serverapp == 'calckey' ? 'https://' + val('urlin') + '/@' + val('usernamein') :
+                                    			 'https://' + val('urlin') + '/users/' + val('usernamein');
 
 			var showBoosts = (!document.getElementById('hideboosts').checked).toString();
 			var showReplies = (!document.getElementById('hidereplies').checked).toString();
