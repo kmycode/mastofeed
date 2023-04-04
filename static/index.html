@@ -22,10 +22,23 @@
 			<label>サーバーの種類:
 				<select id="serverapp">
 					<option value="mastodon">Mastodon</option>
-					<option value="calckey">Calckey (※Misskeyは不可)</option>
+					<option value="misskey">Misskey (追加手順あり)</option>
+					<option value="calckey">Calckey</option>
 				</select>
 			</label>
 			<br>
+			<div id="misskey-description" style="display:none">
+				<label>Misskeyを利用する場合は、以下の追加手順が必要です</label><br>
+				<ol style="margin-left:24px">
+					<li>Misskey (Web) にログイン</li>
+					<li>設定画面を開く</li>
+					<li>「その他の設定」から「API」をクリック</li>
+					<li>「API Console」をクリック</li>
+					<li>「Endpoint」に「<code>i</code>」を入力して「Send」ボタンをクリック</li>
+					<li>「Response」の２行目に「<code>id</code>」が出るので、その値をこの下の「ユーザ名」に入力<br>例：「<code>id: '9cd4jqdi6i',</code>」とあった場合、「<code>9cd4jqdi6i</code>」の部分を入れる</li>
+				</ol>
+				<br><br>
+			</div>
 			<label>サーバーのドメイン:<input required type="text" id="urlin" placeholder="mastodon.social"
 					oninvalid="this.setCustomValidity('サーバーのドメインを入力してください。例：kmy.blue / fedibird.com / otadon.com')"
 					oninput="this.setCustomValidity('')"></label>
@@ -101,6 +114,11 @@
 			iframe.width = val('width');
 			iframe.height = val('height');
 		}
+
+		document.getElementById('serverapp').onchange = () => {
+			var misskey = document.getElementById('misskey-description');
+			misskey.style.display = document.getElementById('serverapp').value == 'misskey' ? 'block' : 'none'
+		};
 	</script>
 </body>
 
