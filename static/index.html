@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1">
-	<title>Mastofeed - embeddable Mastodon feeds</title>
+	<title>Mastofeed - Mastodonアカウントの埋め込み</title>
 	<link rel="stylesheet" href="./stylesheet.css">
 </head>
 
@@ -11,57 +11,59 @@
 	<br>
 	<div>
 		<h1>Mastofeed</h1>
-		<h4>Embedded Mastodon feeds for blogs etc.</h4>
-		<a href="https://github.com/fenwick67/mastofeed" class="cta button alt">Fork on Github <img
+		<h4>Mastodonのフィードをサイトに埋め込み（<a href="https://www.mastofeed.com/" target="_blank" style="border:none;padding:0;color:purple;text-decoration:underline">Mastofeed</a>の日本語版）</h4>
+		<a href="https://github.com/kmycode/mastofeed" class="cta button alt">Fork on Japanese Github <img
+			class="link-logo after" src="github-logo.svg" alt="Github Logo" data-reactid="19"></a>
+		<a href="https://github.com/fenwick67/mastofeed" class="cta button alt">Fork on origin Github <img
 				class="link-logo after" src="github-logo.svg" alt="Github Logo" data-reactid="19"></a><br>
 		<br>
 		<hr><br>
 		<form action="javascript:genUrl()">
-			<label>Instance URL:<input required type="text" id="urlin" placeholder="mastodon.social"
-					oninvalid="this.setCustomValidity('Insert your instance URL. Example: mastodon.social')"
+			<label>サーバーのドメイン:<input required type="text" id="urlin" placeholder="mastodon.social"
+					oninvalid="this.setCustomValidity('サーバーのドメインを入力してください。例：kmy.blue / fedibird.com / otadon.com')"
 					oninput="this.setCustomValidity('')"></label>
 			<br>
-			<label>Username:<input required type="text" id="usernamein" placeholder="gargron"
-					oninvalid="this.setCustomValidity('Insert your username. Example: gargron')"
+			<label>ユーザ名:<input required type="text" id="usernamein" placeholder="gargron"
+					oninvalid="this.setCustomValidity('あなたのユーザ名（@askyqの部分）を入力してください。例：askyq / admin')"
 					oninput="this.setCustomValidity('')"></label>
 			<br>
-			<label>Width (px):<input required type="number" id="width" value="400"
-					oninvalid="this.setCustomValidity('Insert width of generated feed. Default: 400')"
+			<label>フレーム横幅 (px):<input required type="number" id="width" value="400"
+					oninvalid="this.setCustomValidity('フィードの横幅を入力してください')"
 					oninput="this.setCustomValidity('')"></label>
 			<br>
-			<label>Height (px):<input required type="number" id="height" value="800"
-					oninvalid="this.setCustomValidity('Insert height of generated feed. Default: 800')"
+			<label>フレーム高さ (px):<input required type="number" id="height" value="800"
+					oninvalid="this.setCustomValidity('フィードの高さを入力してください')"
 					oninput="this.setCustomValidity('')"></label>
 			<br>
-			<label>UI Scale (percent):<input required type="number" id="size" value="100"
-					oninvalid="this.setCustomValidity('Insert UI scale. Default: 100')"
+			<label>UIの拡大率 (%):<input required type="number" id="size" value="100"
+					oninvalid="this.setCustomValidity('UIの拡大率を入力してください')"
 					oninput="this.setCustomValidity('')"></label>
 			<br>
-			<label>Theme:
+			<label>カラーテーマ:
 				<select id="theme">
-					<option value="dark">Dark</option>
-					<option value="light">Light</option>
-					<option value="auto">Auto (based on css prefers-color-scheme)</option>
+					<option value="dark">ダーク</option>
+					<option value="light">ライト</option>
+					<option value="auto">自動 (表示デバイスのダークモード設定に依存)</option>
 				</select>
 			</label>
 			<br>
-			<label>Show Header?<input id="header" type="checkbox" checked="checked"></label>
+			<label>ヘッダを表示 <input id="header" type="checkbox" checked="checked"></label>
 			<br>
-			<label>Hide replies?<input type="checkbox" id="hidereplies" checked="checked"></label>
+			<label>返信を隠す <input type="checkbox" id="hidereplies" checked="checked"></label>
 			<br>
-			<label>Hide boosts?<input type="checkbox" id="hideboosts" checked="checked"></label>
+			<label>ブーストを隠す <input type="checkbox" id="hideboosts" checked="checked"></label>
 			<br>
 			<br>
-			<button value="generate">Generate</button>
+			<button value="generate">HTML生成</button>
 		</form>
 		<br><br>
-		<label>Use this markup in your HTML: <br><textarea id="result"
+		<label>このHTMLをあなたのサイトに埋め込み: <br><textarea id="result"
 				placeholder="result will go here"></textarea></label>
 		<br><br>
-		<h3>Live Preview:</h3>
+		<h3>プレビュー:</h3>
 		<span class="iframe-contain">
 			<iframe id="frame" allowfullscreen sandbox="allow-top-navigation allow-scripts allow-popups allow-popups-to-escape-sandbox" width="400" height="800"
-				src="/apiv2/feed?userurl=https%3A%2F%2Fmastodon.social%2Fusers%2Fgargron&replies=false&boosts=true"></iframe>
+				src="/apiv2/feed?userurl=https%3A%2F%2Fkmy.blue%2Fusers%2Faskyq&replies=false&boosts=true"></iframe>
 		</span>
 		<br>
 	</div>

@@ -162,6 +162,10 @@ input[type=checkbox]:not(:checked) ~ label::after {
 input[type=checkbox]:not(:checked) ~ div {
   display: none; }
 
+textarea {
+  width: 300px;
+  height: 100px; }
+
 .item-content,
 .description,
 .title,
@@ -306,4 +310,7 @@ body {
   input[type=checkbox]:not(:checked) ~ label::after {
     content: " More"; }
   input[type=checkbox]:not(:checked) ~ div {
-    display: none; } }
+    display: none; }
+  textarea {
+    width: 300px;
+    height: 100px; } }
