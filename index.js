@@ -115,6 +115,76 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 	})
 })
 
+const KMYBLUE_NEWEST_VERSION = { major: 3, minor: 3, urgent: true, type: 'patch', };
+const KMYBLUE_LTS_NEWEST_VERSION = { major: 3, minor: 3, urgent: true, type: 'patch', };
+
+app.options('/api/kb/update-check', cors());
+app.get('/api/kb/update-check', cors(), logger, function(req, res) {
+  const version = req.query.version || ('' + KMYBLUE_LTS_NEWEST_VERSION.major + '.' + KMYBLUE_LTS_NEWEST_VERSION.minor);
+	const versionAvailableNumbers = version.split('-');
+  const versionNumbers = versionAvailableNumbers[0].split('.');
+
+	if (versionNumbers.length !== 2) {
+		res.status(400);
+		res.set({ "Content-Type": "text/plain" });
+		res.send('malformed version');
+		return;
+	}
+
+	const major = parseInt(versionNumbers[0]);
+	const minor = parseInt(versionNumbers[1]);
+	const flag = versionAvailableNumbers.length > 1 ? versionAvailableNumbers[1] : '';
+
+	if (isNaN(major) || major <= 0 || isNaN(minor) || minor < 0) {
+		res.status(400);
+		res.set({ "Content-Type": "text/plain" });
+		res.send('malformed version');
+		return;
+	}
+
+	const isLts = version.endsWith('-lts');
+	const availableVersions = [];
+
+	const addVersion = (obj, isForce) => {
+		if (obj.major < major || (obj.major === major && obj.minor <= minor)) {
+			if (!isForce) {
+				return;
+			}
+		}
+
+		const versionStr = `${obj.major}.${obj.minor}`;
+		const versionFlag = isLts ? '-lts' : '';
+		availableVersions.push({
+			'version': versionStr,
+			urgent: obj.urgent,
+			type: obj.major > major ? 'major' : obj.type,
+			releaseNotes: `https://github.com/mastodon/mastodon/releases/tag/kb${versionStr}${versionFlag}`,
+		});
+	};
+
+	if (isLts) {
+		addVersion(KMYBLUE_LTS_NEWEST_VERSION);
+	} else {
+		addVersion(KMYBLUE_NEWEST_VERSION, !req.query.version);
+	}
+
+	if (availableVersions.length === 0) {
+		res.set({ "Content-Type": "application/json" });
+		res.status(200);
+		res.send({
+			updatesAvailable: [],
+		});
+		return;
+	}
+
+
+	res.set({ "Content-Type": "application/json" });
+	res.status(200);
+	res.send({
+		updatesAvailable: availableVersions,
+	});
+});
+
 app.listen(process.env.PORT || 8000,function(){
 	console.log('Server started, listening on '+(process.env.PORT || 8000));
 });
