@@ -152,13 +152,13 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 			}
 		}
 
-		const versionStr = `${obj.major}.${obj.minor}`;
+		const versionStr = `${obj.major}.0.${obj.minor}`;
 		const versionFlag = isLts ? '-lts' : '';
 		availableVersions.push({
 			'version': versionStr,
 			urgent: obj.urgent,
 			type: obj.major > major ? 'major' : obj.type,
-			releaseNotes: `https://github.com/mastodon/mastodon/releases/tag/kb${versionStr}${versionFlag}`,
+			releaseNotes: `https://github.com/mastodon/mastodon/releases/tag/kb${obj.major}.${obj.minor}${versionFlag}`,
 		});
 	};
 
