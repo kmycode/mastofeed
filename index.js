@@ -154,7 +154,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 		}
 
 		const isLts = KMYBLUE_LTS_VERSIONS.includes(obj.major);
-		const versionStr = `${obj.major}.0.${obj.minor}`;
+		const versionStr = `${obj.major}.${obj.minor}.0`;
 		const versionFlag = isLts ? '-lts' : '';
 		availableVersions.push({
 			'version': versionStr,
