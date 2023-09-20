@@ -117,6 +117,7 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 
 const KMYBLUE_NEWEST_VERSION = { major: 3, minor: 3, urgent: true, type: 'patch', };
 const KMYBLUE_LTS_NEWEST_VERSION = { major: 3, minor: 3, urgent: true, type: 'patch', };
+const KMYBLUE_LTS_VERSIONS = [5];
 
 app.options('/api/kb/update-check', cors());
 app.get('/api/kb/update-check', cors(), logger, function(req, res) {
@@ -142,7 +143,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 		return;
 	}
 
-	const isLts = version.endsWith('-lts');
+	const isLtsOnly = version.endsWith('-lts');
 	const availableVersions = [];
 
 	const addVersion = (obj, isForce) => {
@@ -152,6 +153,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 			}
 		}
 
+		const isLts = KMYBLUE_LTS_VERSIONS.includes(obj.major);
 		const versionStr = `${obj.major}.0.${obj.minor}`;
 		const versionFlag = isLts ? '-lts' : '';
 		availableVersions.push({
@@ -162,7 +164,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 		});
 	};
 
-	if (isLts) {
+	if (isLtsOnly) {
 		addVersion(KMYBLUE_LTS_NEWEST_VERSION);
 	} else {
 		addVersion(KMYBLUE_NEWEST_VERSION, !req.query.version);
