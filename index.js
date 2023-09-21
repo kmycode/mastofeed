@@ -116,6 +116,7 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 })
 
 const KMYBLUE_VERSIONS = [
+	{ major: 5, minor: 0, urgent: false, urgent_cross_version: false, },
 	{ major: 3, minor: 3, urgent: true, urgent_cross_version: true, },
 ];
 const KMYBLUE_LTS_VERSIONS = [5];
@@ -135,7 +136,6 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 
 	const major = parseInt(versionNumbers[0]);
 	const minor = parseInt(versionNumbers[1]);
-	const flag = versionAvailableNumbers.length > 1 ? versionAvailableNumbers[1] : '';
 
 	if (isNaN(major) || major <= 0 || isNaN(minor) || minor < 0) {
 		res.status(400);
@@ -154,7 +154,9 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 			}
 		}
 
-		const historyVersions = KMYBLUE_VERSIONS.filter((v) => (v.major > major || (v.major === major && v.minor > minor)) && (obj.major > v.major || (obj.major === v.major && obj.minor >= v.minor)));
+		const historyVersions = KMYBLUE_VERSIONS
+			.filter((v) => (v.major > major || (v.major === major && v.minor > minor)) && (obj.major > v.major || (obj.major === v.major && obj.minor >= v.minor)))
+			.filter((v) => isLtsOnly ? KMYBLUE_LTS_VERSIONS.includes(v.major) : true);
 
 		const isLts = KMYBLUE_LTS_VERSIONS.includes(obj.major);
 		const versionStr = `${obj.major}.${obj.minor}`;
