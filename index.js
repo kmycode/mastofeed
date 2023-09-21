@@ -116,7 +116,7 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 })
 
 const KMYBLUE_VERSIONS = [
-	{ major: 5, minor: 0, urgent: false, urgent_cross_version: false },
+	{ major: 3, minor: 3, urgent: true, urgent_cross_version: true, },
 ];
 const KMYBLUE_LTS_VERSIONS = [5];
 
