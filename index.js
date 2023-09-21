@@ -115,13 +115,14 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 	})
 })
 
-const KMYBLUE_NEWEST_VERSION = { major: 3, minor: 3, urgent: true, type: 'patch', };
-const KMYBLUE_LTS_NEWEST_VERSION = { major: 3, minor: 3, urgent: true, type: 'patch', };
+const KMYBLUE_VERSIONS = [
+	{ major: 5, minor: 0, urgent: false, urgent_cross_version: false },
+];
 const KMYBLUE_LTS_VERSIONS = [5];
 
 app.options('/api/kb/update-check', cors());
 app.get('/api/kb/update-check', cors(), logger, function(req, res) {
-  const version = req.query.version || ('' + KMYBLUE_LTS_NEWEST_VERSION.major + '.' + KMYBLUE_LTS_NEWEST_VERSION.minor);
+  const version = req.query.version || ('' + KMYBLUE_VERSIONS[0].major + '.' + KMYBLUE_VERSIONS[0].minor);
 	const versionAvailableNumbers = version.split('-');
   const versionNumbers = versionAvailableNumbers[0].split('.');
 
@@ -153,21 +154,26 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 			}
 		}
 
+		const historyVersions = KMYBLUE_VERSIONS.filter((v) => (v.major > major || (v.major === major && v.minor > minor)) && (obj.major > v.major || (obj.major === v.major && obj.minor >= v.minor)));
+
 		const isLts = KMYBLUE_LTS_VERSIONS.includes(obj.major);
-		const versionStr = `${obj.major}.${obj.minor}.0`;
+		const versionStr = `${obj.major}.${obj.minor}`;
 		const versionFlag = isLts ? '-lts' : '';
+		const type = (obj.major > major || isForce) ? 'major' : 'patch';
 		availableVersions.push({
 			'version': versionStr,
-			urgent: obj.urgent,
-			type: obj.major > major ? 'major' : obj.type,
+			urgent: obj.major === major ? historyVersions.some((v) => v.urgent) : historyVersions.some((v) => v.urgent_cross_version),
+			type,
 			releaseNotes: `https://github.com/mastodon/mastodon/releases/tag/kb${obj.major}.${obj.minor}${versionFlag}`,
 		});
 	};
 
 	if (isLtsOnly) {
-		addVersion(KMYBLUE_LTS_NEWEST_VERSION);
+		const ver = KMYBLUE_VERSIONS.filter((v) => KMYBLUE_LTS_VERSIONS.includes(v.major))[0];
+		addVersion(ver);
 	} else {
-		addVersion(KMYBLUE_NEWEST_VERSION, !req.query.version);
+		const ver = KMYBLUE_VERSIONS[0];
+		addVersion(ver, !req.query.version);
 	}
 
 	if (availableVersions.length === 0) {
