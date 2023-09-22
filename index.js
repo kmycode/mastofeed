@@ -167,7 +167,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 			'version': versionStr,
 			urgent: obj.major === major ? historyVersions.some((v) => v.urgent) : historyVersions.some((v) => v.urgent_cross_version),
 			type,
-			releaseNotes: `https://github.com/mastodon/mastodon/releases/tag/kb${obj.major}.${obj.minor}${versionFlag}`,
+			releaseNotes: `https://github.com/kmycode/mastodon/releases/tag/kb${obj.major}.${obj.minor}${versionFlag}`,
 		});
 	};
 
