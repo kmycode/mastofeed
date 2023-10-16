@@ -116,10 +116,12 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 })
 
 const KMYBLUE_VERSIONS = [
+	{ major: 7, minor: 2, urgent: true, urgent_cross_version: false, },
 	{ major: 7, minor: 1, urgent: true, urgent_cross_version: true, },
 	{ major: 7, minor: 0, urgent: true, urgent_cross_version: true, },
 	{ major: 6, minor: 1, urgent: true, urgent_cross_version: true, },
 	{ major: 6, minor: 0, urgent: false, urgent_cross_version: false, },
+	{ major: 5, minor: 6, urgent: true, urgent_cross_version: false, },
 	{ major: 5, minor: 5, urgent: true, urgent_cross_version: true, },
 	{ major: 5, minor: 4, urgent: true, urgent_cross_version: true, },
 	{ major: 5, minor: 3, urgent: true, urgent_cross_version: true, },
