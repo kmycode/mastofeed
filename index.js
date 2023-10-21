@@ -115,21 +115,23 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 	})
 })
 
+// 新しいものから順に
 const KMYBLUE_VERSIONS = [
 	{ major: 7, minor: 2, urgent: true, urgent_cross_version: false, },
-	{ major: 7, minor: 1, urgent: true, urgent_cross_version: true, },
-	{ major: 7, minor: 0, urgent: true, urgent_cross_version: true, },
-	{ major: 6, minor: 1, urgent: true, urgent_cross_version: true, },
+	{ major: 7, minor: 1, urgent: true, urgent_cross_version: true, cross_by: 1, },
+	{ major: 7, minor: 0, urgent: true, urgent_cross_version: true, cross_by: 1, },
+	{ major: 6, minor: 1, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 6, minor: 0, urgent: false, urgent_cross_version: false, },
 	{ major: 5, minor: 6, urgent: true, urgent_cross_version: false, },
-	{ major: 5, minor: 5, urgent: true, urgent_cross_version: true, },
-	{ major: 5, minor: 4, urgent: true, urgent_cross_version: true, },
-	{ major: 5, minor: 3, urgent: true, urgent_cross_version: true, },
+	{ major: 5, minor: 5, urgent: true, urgent_cross_version: true, cross_by: 1, },
+	{ major: 5, minor: 4, urgent: true, urgent_cross_version: true, cross_by: 1, },
+	{ major: 5, minor: 3, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 5, minor: 2, urgent: true, urgent_cross_version: false, },
 	{ major: 5, minor: 1, urgent: true, urgent_cross_version: false, },
 	{ major: 5, minor: 0, urgent: false, urgent_cross_version: false, },
 	{ major: 3, minor: 3, urgent: true, urgent_cross_version: true, },
 ];
+// 新しいものから順に
 const KMYBLUE_LTS_VERSIONS = [5];
 
 app.options('/api/kb/update-check', cors());
@@ -156,6 +158,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 	}
 
 	const isLtsOnly = version.endsWith('-lts');
+	const isNowLts = KMYBLUE_LTS_VERSIONS.includes(major);
 	const availableVersions = [];
 
 	const addVersion = (obj, isForce) => {
@@ -167,23 +170,55 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 
 		const historyVersions = KMYBLUE_VERSIONS
 			.filter((v) => (v.major > major || (v.major === major && v.minor > minor)) && (obj.major > v.major || (obj.major === v.major && obj.minor >= v.minor)))
-			.filter((v) => isLtsOnly ? KMYBLUE_LTS_VERSIONS.includes(v.major) : true);
+			.filter((v) => {
+				if (isLtsOnly) {
+					if (isNowLts) {
+						return KMYBLUE_LTS_VERSIONS.includes(v.major);
+					} else {
+						const lastLts = KMYBLUE_LTS_VERSIONS[0];
+						if (lastLts > major) {
+							return v.major <= lastLts;
+						} else {
+							return true;
+						}
+					}
+				} else {
+					return true;
+				}
+			});
 
 		const isLts = KMYBLUE_LTS_VERSIONS.includes(obj.major);
 		const versionStr = `${obj.major}.${obj.minor}`;
 		const versionFlag = isLts ? '-lts' : '';
 		const type = (obj.major > major || isForce) ? 'major' : 'patch';
-		availableVersions.push({
-			'version': versionStr,
-			urgent: obj.major === major ? historyVersions.some((v) => v.urgent) : historyVersions.some((v) => v.urgent_cross_version),
-			type,
-			releaseNotes: `https://github.com/kmycode/mastodon/releases/tag/kb${obj.major}.${obj.minor}${versionFlag}`,
-		});
+		const urgent = obj.major === major ? historyVersions.some((v) => v.urgent) : historyVersions.some((v) => v.urgent_cross_version && v.cross_by <= major);
+
+		if (!isLtsOnly || isNowLts || urgent) {
+			availableVersions.push({
+				'version': versionStr,
+				urgent,
+				type,
+				releaseNotes: `https://github.com/kmycode/mastodon/releases/tag/kb${obj.major}.${obj.minor}${versionFlag}`,
+			});
+		}
 	};
 
 	if (isLtsOnly) {
-		const ver = KMYBLUE_VERSIONS.filter((v) => KMYBLUE_LTS_VERSIONS.includes(v.major))[0];
-		addVersion(ver);
+		if (isNowLts) {
+			const ver = KMYBLUE_VERSIONS.filter((v) => KMYBLUE_LTS_VERSIONS.includes(v.major))[0];
+			addVersion(ver);
+		} else {
+			const lastLts = KMYBLUE_LTS_VERSIONS[0];
+			if (lastLts > major) {
+				const majors = KMYBLUE_VERSIONS.filter((v) => v.major <= lastLts).filter((v) => v.major === major ? v.urgent : (v.urgent_cross_version && v.cross_by <= major)).map((v) => v.major);
+				const ver = KMYBLUE_VERSIONS.filter((v) => v.major === majors[0])[0];
+				addVersion(ver);
+			} else {
+				const majors = KMYBLUE_VERSIONS.filter((v) => v.major === major ? v.urgent : (v.urgent_cross_version && v.cross_by <= major)).map((v) => v.major);
+				const ver = KMYBLUE_VERSIONS.filter((v) => v.major === majors[0])[0];
+				addVersion(ver);
+			}
+		}
 	} else {
 		const ver = KMYBLUE_VERSIONS[0];
 		addVersion(ver, !req.query.version);
