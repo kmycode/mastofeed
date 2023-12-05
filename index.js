@@ -125,6 +125,7 @@ const KMYBLUE_VERSIONS = [
 	{ major: 7, minor: 0, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 6, minor: 1, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 6, minor: 0, urgent: false, urgent_cross_version: false, },
+	{ major: 5, minor: 10, urgent: false, urgent_cross_version: false, },
 	{ major: 5, minor: 9, urgent: false, urgent_cross_version: false, },
 	{ major: 5, minor: 8, urgent: false, urgent_cross_version: false, },
 	{ major: 5, minor: 7, urgent: true, urgent_cross_version: true, cross_by: 1, },
