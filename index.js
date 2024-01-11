@@ -162,8 +162,9 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 		return;
 	}
 
-	const major = parseInt(versionNumbers[0]);
-	const minor = parseInt(versionNumbers[1]);
+	const isDev = version.includes('-dev');
+	const major = parseInt(versionNumbers[0]) - (isDev ? 1 : 0);
+	const minor = isDev ? 999 : parseInt(versionNumbers[1]);
 
 	if (isNaN(major) || major <= 0 || isNaN(minor) || minor < 0) {
 		res.status(400);
@@ -172,7 +173,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 		return;
 	}
 
-	const isLtsOnly = version.endsWith('-lts');
+	const isLtsOnly = version.includes('-lts');
 	const isNowLts = KMYBLUE_LTS_VERSIONS.includes(major);
 	const availableVersions = [];
 
