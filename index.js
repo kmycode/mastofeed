@@ -117,6 +117,7 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 
 // 新しいものから順に
 const KMYBLUE_VERSIONS = [
+	{ major: 13, minor: 1, urgent: false, urgent_cross_version: false, },
 	{ major: 13, minor: 0, urgent: false, urgent_cross_version: false, },
 	{ major: 12, minor: 3, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 12, minor: 2, urgent: false, urgent_cross_version: false, },
@@ -145,6 +146,7 @@ const KMYBLUE_VERSIONS = [
 	{ major: 7, minor: 0, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 6, minor: 1, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 6, minor: 0, urgent: false, urgent_cross_version: false, },
+	{ major: 5, minor: 22, urgent: false, urgent_cross_version: false, },
 	{ major: 5, minor: 21, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 5, minor: 20, urgent: true, urgent_cross_version: false, },
 	{ major: 5, minor: 19, urgent: true, urgent_cross_version: true, cross_by: 1, },
