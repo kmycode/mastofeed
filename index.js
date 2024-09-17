@@ -117,6 +117,7 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 
 // 新しいものから順に
 const KMYBLUE_VERSIONS = [
+	{ major: 14, minor: 1, urgent: true, urgent_cross_version: true, cross_by: 6, },
 	{ major: 14, minor: 0, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 13, minor: 1, urgent: false, urgent_cross_version: false, },
 	{ major: 13, minor: 0, urgent: false, urgent_cross_version: false, },
