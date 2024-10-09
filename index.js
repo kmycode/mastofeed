@@ -117,6 +117,8 @@ app.get('/apiv2/feed',cors(),logger,function(req,res){
 
 // 新しいものから順に
 const KMYBLUE_VERSIONS = [
+	{ major: 15, minor: 0, urgent: false, urgent_cross_version: false, },
+	{ major: 14, minor: 2, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 14, minor: 1, urgent: true, urgent_cross_version: true, cross_by: 6, },
 	{ major: 14, minor: 0, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 13, minor: 1, urgent: false, urgent_cross_version: false, },
@@ -148,6 +150,7 @@ const KMYBLUE_VERSIONS = [
 	{ major: 7, minor: 0, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 6, minor: 1, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 6, minor: 0, urgent: false, urgent_cross_version: false, },
+	{ major: 5, minor: 25, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 5, minor: 24, urgent: true, urgent_cross_version: true, cross_by: 1, },
 	{ major: 5, minor: 23, urgent: false, urgent_cross_version: false, },
 	{ major: 5, minor: 22, urgent: false, urgent_cross_version: false, },
@@ -176,7 +179,7 @@ const KMYBLUE_VERSIONS = [
 	{ major: 3, minor: 3, urgent: true, urgent_cross_version: true, },
 ];
 // 新しいものから順に
-const KMYBLUE_LTS_VERSIONS = [5];
+const KMYBLUE_LTS_VERSIONS = [15, 5];
 
 app.options('/api/kb/update-check', cors());
 app.get('/api/kb/update-check', cors(), logger, function(req, res) {
@@ -205,6 +208,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 	const isLtsOnly = version.includes('-lts');
 	const isNowLts = KMYBLUE_LTS_VERSIONS.includes(major);
 	const availableVersions = [];
+	const lastLts = KMYBLUE_LTS_VERSIONS[0];
 
 	const isOldOrPresentVersion = (version) => {
 		if (typeof version === 'number') {
@@ -230,7 +234,6 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 					if (isNowLts) {
 						return KMYBLUE_LTS_VERSIONS.includes(v.major);
 					} else {
-						const lastLts = KMYBLUE_LTS_VERSIONS[0];
 						if (lastLts > major) {
 							return v.major <= lastLts;
 						} else {
@@ -248,7 +251,7 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 		const type = (obj.major > major || isForce) ? 'major' : 'patch';
 		const urgent = obj.major === major ? historyVersions.some((v) => v.urgent) : historyVersions.some((v) => v.urgent_cross_version && isOldOrPresentVersion(v.cross_by));
 
-		if (!isLtsOnly || isNowLts || urgent) {
+		if (!isLtsOnly || isNowLts || urgent || isForce) {
 			availableVersions.push({
 				'version': versionStr,
 				urgent,
@@ -263,11 +266,9 @@ app.get('/api/kb/update-check', cors(), logger, function(req, res) {
 			const ver = KMYBLUE_VERSIONS.filter((v) => KMYBLUE_LTS_VERSIONS.includes(v.major))[0];
 			addVersion(ver);
 		} else {
-			const lastLts = KMYBLUE_LTS_VERSIONS[0];
 			if (lastLts > major) {
-				const majors = KMYBLUE_VERSIONS.filter((v) => v.major <= lastLts).filter((v) => v.major === major ? v.urgent : (v.urgent_cross_version && isOldOrPresentVersion(v.cross_by))).map((v) => v.major);
-				const ver = KMYBLUE_VERSIONS.filter((v) => v.major === majors[0])[0];
-				addVersion(ver);
+				const ver = KMYBLUE_VERSIONS.filter((v) => v.major === lastLts)[0];
+				addVersion(ver, true);
 			} else {
 				const majors = KMYBLUE_VERSIONS.filter((v) => v.major === major ? v.urgent : (v.urgent_cross_version && isOldOrPresentVersion(v.cross_by))).map((v) => v.major);
 				const ver = KMYBLUE_VERSIONS.filter((v) => v.major === majors[0])[0];
